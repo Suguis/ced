@@ -1,2 +1,2 @@
 # ced
-A simple curses editor written in C.
+A simple curses text editor written in C.
