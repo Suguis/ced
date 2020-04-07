@@ -64,7 +64,6 @@ void editor_interpret_key(struct editor *ed, int key) {
     buffer_insert_char(ed->buff, key);
     buffer_move_cursor_x(ed->buff, 1);
   }
-  //mvaddch(12,1,ed->buff->current_char->elem);
 }
 
 void editor_refresh(struct editor *ed) {

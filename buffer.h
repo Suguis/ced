@@ -27,6 +27,7 @@ struct buffer {
   struct line_node *current_line;
   struct char_node *current_char;
   int cursor_x;
+  int cursor_real_x;
   int cursor_y;
 };
 

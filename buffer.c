@@ -32,6 +32,7 @@ struct buffer *buffer_new() {
   buff->current_line->prev_line = buff->current_line->next_line = NULL;
   buff->current_char = buff->current_line->first_char;
   buff->cursor_x = 0;
+  buff->cursor_real_x = 0;
   buff->cursor_y = 0;
   
   return buff;
@@ -89,6 +90,7 @@ void buffer_move_cursor_x(struct buffer *buff, int dx) {
       buff->cursor_x--;
     }
   }
+  buff->cursor_real_x = buff->cursor_x;
 }
 
 void buffer_move_cursor_y(struct buffer *buff, int dy) {
@@ -111,7 +113,7 @@ void buffer_move_cursor_y(struct buffer *buff, int dy) {
    */
   buff->current_char = buff->current_line->first_char;
   int x = 0;
-  while (x != buff->cursor_x && buff->current_char != buff->current_line->last_char) {
+  while (x != buff->cursor_real_x && buff->current_char != buff->current_line->last_char) {
     buff->current_char = buff->current_char->next_char;
     x++;
   }
