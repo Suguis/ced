@@ -1,13 +1,13 @@
 #include "editor.h"
 #include "buffer.h"
+#include "util.h"
 #include <curses.h>
 #include <locale.h>
 #include <stddef.h>
 #include <stdlib.h>
 
-struct Editor *editor_new() {
-  struct Editor *ed = malloc(sizeof(struct Editor));
-  if (ed == NULL) exit(-1);
+struct editor *editor_new() {
+  struct editor *ed = safe_malloc(sizeof(struct editor));
   ed->needs_exit = 0;
   ed->buff = buffer_new();
   
@@ -17,21 +17,20 @@ struct Editor *editor_new() {
   noecho();
   nonl();
   keypad(stdscr, true);
-  // printw("Helloaá World !!!");
   refresh();
 
   return ed;
 }
 
-void editor_exit(struct Editor *ed) {
-  struct Buffer *b = buffer_new();
+void editor_exit(struct editor *ed) {
+  struct buffer *b = buffer_new();
   buffer_free(b);
   buffer_free(ed->buff);
   free(ed);
   endwin();
 }
 
-int editor_needs_exit(struct Editor *ed) {
+int editor_needs_exit(struct editor *ed) {
   return ed->needs_exit;
 }
 
@@ -39,19 +38,17 @@ int editor_get_key() {
   return getch();
 }
 
-void editor_interpret_key(struct Editor *ed, int key) {
+void editor_interpret_key(struct editor *ed, int key) {
   switch (key) {
   case KEY_UP:
-    printw("UP");
     break;
   case KEY_DOWN:
-    printw("DOWN");
     break;
   case KEY_LEFT:
-    printw("LEFT");
+    buffer_move_cursor(ed->buff, 0, -1);
     break;
   case KEY_RIGHT:
-    printw("RIGHT");
+    buffer_move_cursor(ed->buff, 0, 1);
     break;
   case 'q':
     ed->needs_exit = 1;
@@ -60,22 +57,23 @@ void editor_interpret_key(struct Editor *ed, int key) {
     buffer_insert_char(ed->buff, key);
     buffer_move_cursor(ed->buff, 0, 1);
   }
+  //mvaddch(12,1,ed->buff->current_char->elem);
 }
 
-void editor_refresh(struct Editor *ed) {
+void editor_refresh(struct editor *ed) {
   int y = 0;
   int x = 0;
-  struct LineNode *l_node = ed->buff->first;
-  struct CharNode *c_node;
+  struct line_node *line = ed->buff->first_line;
+  struct char_node *node;
   
-  while(l_node != NULL) {
-    c_node = l_node->elem->first;
-    while(c_node != l_node->elem->last) {
-      mvaddch(y, x++, c_node->elem);
-      c_node = c_node->next;
+  while(line != NULL) {
+    node = line->first_char;
+    while(node != line->last_char) {
+      mvaddch(y, x++, node->elem);
+      node = node->next_char;
     }
     y++;
-    l_node = l_node->next;
+    line = line->next_line;
   }
   move(ed->buff->cursor_y, ed->buff->cursor_x);
   

@@ -1,16 +1,27 @@
 #ifndef EDITOR_H
 #define EDITOR_H
 
-struct Editor {
+struct editor {
   int needs_exit;
-  struct Buffer *buff;
+  struct buffer *buff;
 };
 
-struct Editor *editor_new();
-void editor_exit();
-int editor_needs_exit(struct Editor *ed);
+// Creates a new editor structure with an empty buffer, and starts curses mode
+struct editor *editor_new();
+
+// Frees the memory of the editor and ends curses mode
+void editor_exit(struct editor *ed);
+
+// Returns 0 if the editor has not been given the order to exit
+int editor_needs_exit(struct editor *ed);
+
+// Waits a key input from the user
 int editor_get_key();
-void editor_interpret_key(struct Editor *ed, int key);
-void editor_refresh(struct Editor *ed);
+
+// Executes an action according to the key
+void editor_interpret_key(struct editor *ed, int key);
+
+// Refreshes the display of the editor
+void editor_refresh(struct editor *ed);
 
 #endif // EDITOR_H

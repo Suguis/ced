@@ -1,7 +1,7 @@
 #include "editor.h"
 
 int main() {
-  struct Editor *ed = editor_new();
+  struct editor *ed = editor_new();
   
   while(!editor_needs_exit(ed)) {
     editor_interpret_key(ed, editor_get_key());
