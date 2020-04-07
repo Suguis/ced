@@ -41,32 +41,43 @@ int editor_get_key() {
 void editor_interpret_key(struct editor *ed, int key) {
   switch (key) {
   case KEY_UP:
+    buffer_move_cursor_y(ed->buff, -1);
     break;
   case KEY_DOWN:
+    buffer_move_cursor_y(ed->buff, 1);
     break;
   case KEY_LEFT:
-    buffer_move_cursor(ed->buff, 0, -1);
+    buffer_move_cursor_x(ed->buff, -1);
     break;
   case KEY_RIGHT:
-    buffer_move_cursor(ed->buff, 0, 1);
+    buffer_move_cursor_x(ed->buff, 1);
     break;
   case 'q':
     ed->needs_exit = 1;
     break;
+  case KEY_ENTER:
+  case '\r':
+  case 'n':
+    buffer_insert_line(ed->buff);
+    buffer_move_cursor_y(ed->buff, 1);
+    break;
   default:
     buffer_insert_char(ed->buff, key);
-    buffer_move_cursor(ed->buff, 0, 1);
+    buffer_move_cursor_x(ed->buff, 1);
   }
   //mvaddch(12,1,ed->buff->current_char->elem);
 }
 
 void editor_refresh(struct editor *ed) {
+  clear();
+  
   int y = 0;
-  int x = 0;
+  int x;
   struct line_node *line = ed->buff->first_line;
   struct char_node *node;
   
   while(line != NULL) {
+    x = 0;
     node = line->first_char;
     while(node != line->last_char) {
       mvaddch(y, x++, node->elem);
