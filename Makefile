@@ -1,8 +1,7 @@
 EXEC=ced
 OBJ=main.o editor.o buffer.o util.o
 LIB=-lncursesw
-FLAGS=-g -Wall -fanalyzer
-CC=gcc-10
+FLAGS=-g -Wall
 
 ced: $(OBJ)
 	$(CC) $^ -o $(EXEC) $(FLAGS) $(LIB)
