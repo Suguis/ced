@@ -57,7 +57,6 @@ void editor_interpret_key(struct editor *ed, int key) {
     break;
   case KEY_ENTER:
   case '\r':
-  case 'n':
     buffer_insert_line(ed->buff);
     buffer_move_cursor_y(ed->buff, 1);
     break;
