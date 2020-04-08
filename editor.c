@@ -56,8 +56,9 @@ void editor_interpret_key(struct editor *ed, int key) {
     ed->needs_exit = 1;
     break;
   case KEY_BACKSPACE:
-    buffer_move_cursor_x(ed->buff, -1);
-    buffer_delete_char(ed->buff);
+    // Don't delete the char if we are on the beginning of the line
+    if (buffer_move_cursor_x(ed->buff, -1))
+      buffer_delete_char(ed->buff);
     break;
   case KEY_ENTER:
   case '\r':

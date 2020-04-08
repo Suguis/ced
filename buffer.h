@@ -53,9 +53,11 @@ void buffer_delete_char(struct buffer *buff);
 void buffer_insert_line(struct buffer *buff);
 
 // Moves the x coordinate of the buffer cursor.
-void buffer_move_cursor_x(struct buffer *buff, int dx);
+// Returns the numbers of steps that the cursor has moved
+int buffer_move_cursor_x(struct buffer *buff, int dx);
 
 // Moves the y coordinate of the buffer cursor
-void buffer_move_cursor_y(struct buffer *buff, int dy);
+// Returns the numbers of steps that the cursor has moved
+int buffer_move_cursor_y(struct buffer *buff, int dy);
 
 #endif // BUFFER_H
