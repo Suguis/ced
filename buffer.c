@@ -66,6 +66,20 @@ void buffer_insert_char(struct buffer *buff, int ch) {
   new_next->prev_char = new;
 }
 
+void buffer_delete_char(struct buffer *buff) {
+  if (buff->current_char != buff->current_line->last_char) {
+    buff->current_char->next_char->prev_char = buff->current_char->prev_char;
+    if (buff->current_char == buff->current_line->first_char) {
+      buff->current_line->first_char = buff->current_char->next_char;
+    } else {
+      buff->current_char->prev_char->next_char = buff->current_char->next_char;
+    }
+    struct char_node *deleted = buff->current_char;
+    buff->current_char = buff->current_char->next_char;
+    free(deleted);
+  }
+}
+
 void buffer_insert_line(struct buffer *buff) {
   struct line_node *new = line_node_new();
   new->prev_line = buff->current_line;

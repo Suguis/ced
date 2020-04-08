@@ -46,10 +46,13 @@ void buffer_free(struct buffer *buff);
 // Inserts a character into the buffer
 void buffer_insert_char(struct buffer *buff, int ch);
 
+// Deletes a character into the buffer
+void buffer_delete_char(struct buffer *buff);
+
 // Inserts a new line into the buffer
 void buffer_insert_line(struct buffer *buff);
 
-// Moves the x coordinate of the buffer cursor
+// Moves the x coordinate of the buffer cursor.
 void buffer_move_cursor_x(struct buffer *buff, int dx);
 
 // Moves the y coordinate of the buffer cursor
