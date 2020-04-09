@@ -1,11 +1,13 @@
 #ifndef BUFFER_H
 #define BUFFER_H
 
+#include <wchar.h>
+
 /* The char_node and line_node structs represent respectively a character of a sigular line
  * and a line of a singular buffer, in the form of a double linked list.
  */
 struct char_node {
-  int elem;
+  wchar_t elem[2];
   struct char_node *prev_char;
   struct char_node *next_char;
 };
@@ -44,7 +46,7 @@ struct buffer *buffer_new();
 void buffer_free(struct buffer *buff);
 
 // Inserts a character into the buffer
-void buffer_insert_char(struct buffer *buff, int ch);
+void buffer_insert_char(struct buffer *buff, wchar_t *ch);
 
 // Deletes a character into the buffer
 void buffer_delete_char(struct buffer *buff);

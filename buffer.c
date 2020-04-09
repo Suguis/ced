@@ -5,11 +5,9 @@
 struct line_node *line_node_new() {
   struct line_node *line = safe_malloc(sizeof(struct line_node));
   
-  /* We create an empty char_node, to make it possible to point one character to the
-   * right from the last character of the line.
-   */
+  // We create an empty char_node, to make it possible to point one character to the
+  // right from the last character of the line.
   line->first_char = line->last_char = safe_malloc(sizeof(struct char_node));
-  line->first_char->elem = '\0';
   line->first_char->prev_char = line->first_char->next_char = NULL;
   
   return line;
@@ -48,10 +46,10 @@ void buffer_free(struct buffer *buff) {
   free(buff);
 }
 
-void buffer_insert_char(struct buffer *buff, int ch) {
+void buffer_insert_char(struct buffer *buff, wchar_t *ch) {
   struct char_node *new = safe_malloc(sizeof(struct char_node));
-  if (new == NULL) exit(-1);
-  new->elem = ch;
+  new->elem[0] = ch[0]; // Char copy
+  new->elem[1] = ch[1];
 
   struct char_node *new_prev = buff->current_char->prev_char;
   struct char_node *new_next = buff->current_char;

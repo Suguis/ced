@@ -1,10 +1,11 @@
+#define _XOPEN_SOURCE_EXTENDED // To use get_wch()
 #include "editor.h"
 #include "buffer.h"
 #include "util.h"
 #include <curses.h>
-#include <locale.h>
 #include <stddef.h>
 #include <stdlib.h>
+#include <locale.h>
 
 struct editor *editor_new() {
   struct editor *ed = safe_malloc(sizeof(struct editor));
@@ -34,11 +35,15 @@ int editor_needs_exit(struct editor *ed) {
   return ed->needs_exit;
 }
 
-int editor_get_key() {
-  return getch();
+unsigned int editor_get_key() {
+  unsigned int key;
+  get_wch(&key);
+  return key;
 }
 
-void editor_interpret_key(struct editor *ed, int key) {
+void editor_interpret_key(struct editor *ed, unsigned int key) {
+  wchar_t ch[2] = {key, L'\0'};
+  
   switch (key) {
   case KEY_UP:
     buffer_move_cursor_y(ed->buff, -1);
@@ -66,7 +71,7 @@ void editor_interpret_key(struct editor *ed, int key) {
     buffer_move_cursor_y(ed->buff, 1);
     break;
   default:
-    buffer_insert_char(ed->buff, key);
+    buffer_insert_char(ed->buff, ch);
     buffer_move_cursor_x(ed->buff, 1);
   }
 }
@@ -83,7 +88,7 @@ void editor_refresh(struct editor *ed) {
     x = 0;
     node = line->first_char;
     while(node != line->last_char) {
-      mvaddch(y, x++, node->elem);
+      mvaddwstr(y, x++, node->elem);
       node = node->next_char;
     }
     y++;
