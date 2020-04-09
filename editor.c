@@ -16,6 +16,7 @@ struct editor *editor_new() {
   initscr();
   raw();
   noecho();
+  set_escdelay(ESC_DELAY);
   nonl();
   keypad(stdscr, true);
   refresh();
@@ -57,7 +58,7 @@ void editor_interpret_key(struct editor *ed, unsigned int key) {
   case KEY_RIGHT:
     buffer_move_cursor_x(ed->buff, 1);
     break;
-  case 'q':
+  case KEY_ESC:
     ed->needs_exit = 1;
     break;
   case KEY_BACKSPACE:

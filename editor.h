@@ -1,6 +1,9 @@
 #ifndef EDITOR_H
 #define EDITOR_H
 
+#define KEY_ESC 27
+#define ESC_DELAY 10
+
 struct editor {
   int needs_exit;
   struct buffer *buff;
