@@ -33,9 +33,9 @@ struct buffer {
   int cursor_y;
 };
 
-// Move the cursor to the end of the line
-#define buffer_move_cursor_x_end(buff) while(buffer_move_cursor_x(buff, 1));
-#define buffer_move_cursor_x_home(buff) while(buffer_move_cursor_x(buff, -1));
+#define buffer_move_cursor_x_end(buff) while(buffer_move_cursor_x(buff, 1))
+#define buffer_move_cursor_x_home(buff) while(buffer_move_cursor_x(buff, -1))
+#define buffer_update_cursor_real_x(buff) (buff->cursor_real_x = buff->cursor_x)
 
 // Creates a new empty line
 struct line_node *line_node_new();

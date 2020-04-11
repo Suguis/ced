@@ -103,7 +103,6 @@ int buffer_move_cursor_x(struct buffer *buff, int dx) {
       buff->cursor_x--;
     }
   }
-  buff->cursor_real_x = buff->cursor_x;
 
   return steps;
 }

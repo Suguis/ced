@@ -64,10 +64,14 @@ void editor_interpret_key(struct editor *ed, unsigned int key) {
     buffer_move_cursor_y(ed->buff, 1);
     break;
   case KEY_LEFT:
-    buffer_move_cursor_x(ed->buff, -1);
+    if (buffer_move_cursor_x(ed->buff, -1)) {
+      buffer_update_cursor_real_x(ed->buff);
+    }
     break;
   case KEY_RIGHT:
-    buffer_move_cursor_x(ed->buff, 1);
+    if (buffer_move_cursor_x(ed->buff, 1)) {
+      buffer_update_cursor_real_x(ed->buff);
+    }
     break;
   case KEY_ESC:
     ed->needs_exit = 1;
@@ -87,6 +91,7 @@ void editor_interpret_key(struct editor *ed, unsigned int key) {
   case '\r':
     buffer_insert_line(ed->buff);
     buffer_move_cursor_y(ed->buff, 1);
+    buffer_update_cursor_real_x(ed->buff);
     break;
   default:
     buffer_insert_char(ed->buff, ch);
@@ -110,7 +115,7 @@ void editor_draw_text(struct editor *ed) {
   struct line_node *line = ed->buff->first_line;
   struct char_node *node;
   
-  while(line != NULL) {
+  while (line != NULL) {
     x = 0;
     node = line->first_char;
     while(node != line->last_char) {
