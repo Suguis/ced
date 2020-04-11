@@ -26,8 +26,9 @@ void line_node_free(struct line_node *line) {
 struct buffer *buffer_new() {
   struct buffer *buff = safe_malloc(sizeof(struct buffer));
   
-  buff->first_line = buff->last_line = buff->current_line = line_node_new();
-  buff->current_line->prev_line = buff->current_line->next_line = NULL;
+  buffer_first_line(buff) = buffer_last_line(buff) = buff->current_line = line_node_new();
+  buff->current_line->prev_line = &buff->beg_sentinel;
+  buff->current_line->next_line = &buff->end_sentinel;
   buff->current_char = buff->current_line->first_char;
   buff->cursor_x = 0;
   buff->cursor_real_x = 0;
@@ -37,8 +38,8 @@ struct buffer *buffer_new() {
 }
 
 void buffer_free(struct buffer *buff) {
-  struct line_node *line = buff->first_line;
-  while(line != NULL) {
+  struct line_node *line = buffer_first_line(buff);
+  while(line != &buff->end_sentinel) {
     struct line_node *next = line->next_line;
     line_node_free(line);
     line = next;
@@ -83,7 +84,7 @@ void buffer_insert_line(struct buffer *buff) {
   new->prev_line = buff->current_line;
   new->next_line = buff->current_line->next_line;
 
-  if (buff->current_line->next_line) buff->current_line->next_line->prev_line = new;
+  buff->current_line->next_line->prev_line = new;
   buff->current_line->next_line = new;
 }
 
@@ -110,13 +111,13 @@ int buffer_move_cursor_x(struct buffer *buff, int dx) {
 int buffer_move_cursor_y(struct buffer *buff, int dy) {
   int steps = 0;
   if (dy > 0) {
-    while (dy != steps && buff->current_line->next_line != NULL) {
+    while (dy != steps && buff->current_line != buffer_last_line(buff)) {
       buff->current_line = buff->current_line->next_line;
       steps++;
       buff->cursor_y++;
     }
   } else {
-    while (dy != steps && buff->current_line->prev_line != NULL) {
+    while (dy != steps && buff->current_line != buffer_first_line(buff)) {
       buff->current_line = buff->current_line->prev_line;
       steps--;
       buff->cursor_y--;

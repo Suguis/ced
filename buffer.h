@@ -27,14 +27,17 @@ struct line_node {
  * is stored in that variable and remains unchanged unless we move horizontally.
  */
 struct buffer {
-  struct line_node *first_line;
-  struct line_node *last_line;
+  struct line_node beg_sentinel; // TODO: make const if possible
+  struct line_node end_sentinel;
   struct line_node *current_line;
   struct char_node *current_char;
   int cursor_x;
   int cursor_real_x;
   int cursor_y;
 };
+
+#define buffer_first_line(buff) buff->beg_sentinel.next_line
+#define buffer_last_line(buff) buff->end_sentinel.prev_line
 
 #define buffer_move_cursor_x_end(buff) while(buffer_move_cursor_x(buff, 1))
 #define buffer_move_cursor_x_home(buff) while(buffer_move_cursor_x(buff, -1))
@@ -55,7 +58,7 @@ void buffer_free(struct buffer *buff);
 // Inserts a character into the buffer
 void buffer_insert_char(struct buffer *buff, wchar_t *ch);
 
-// Deletes a character into the buffer
+// Deletes the character that the cursor is pointing to
 void buffer_delete_char(struct buffer *buff);
 
 // Inserts a new line into the buffer

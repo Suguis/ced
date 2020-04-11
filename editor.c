@@ -78,9 +78,11 @@ void editor_interpret_key(struct editor *ed, unsigned int key) {
     break;
   case KEY_HOME:
     buffer_move_cursor_x_home(ed->buff);
+    //buffer_delete_line(ed->buff);
     break;
   case KEY_END:
     buffer_move_cursor_x_end(ed->buff);
+    // TODO: actualizar real_x adecuadamente
     break;
   case KEY_BACKSPACE:
     // Don't delete the char if we are on the beginning of the line
@@ -112,10 +114,10 @@ void editor_draw_text(struct editor *ed) {
   
   int y = 0;
   int x;
-  struct line_node *line = ed->buff->first_line;
+  struct line_node *line = buffer_first_line(ed->buff);
   struct char_node *node;
   
-  while (line != NULL) {
+  while (line != &ed->buff->end_sentinel) {
     x = 0;
     node = line->first_char;
     while(node != line->last_char) {
