@@ -88,6 +88,27 @@ void buffer_insert_line(struct buffer *buff) {
   buff->current_line->next_line = new;
 }
 
+void buffer_delete_line(struct buffer *buff) {
+  if (buffer_first_line(buff) == buffer_last_line(buff)) {
+    buffer_move_cursor_x_home(buff);
+    while (buffer_first_line(buff)->first_char != buffer_first_line(buff)->last_char) {
+      buffer_delete_char(buff);
+    }
+  } else {
+    struct line_node *deleted = buff->current_line;
+    
+    if (buff->current_line == buffer_last_line(buff)) buffer_move_cursor_y(buff, -1);
+    else {
+      buffer_move_cursor_y(buff, 1);
+      buff->cursor_y--;
+    }
+    
+    deleted->prev_line->next_line = deleted->next_line;
+    deleted->next_line->prev_line = deleted->prev_line;
+    line_node_free(deleted);
+  }
+}
+
 int buffer_move_cursor_x(struct buffer *buff, int dx) {
   // We move the cursor until we reach the bounds or until the requested distance has been moved
   int steps = 0;

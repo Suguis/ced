@@ -64,6 +64,11 @@ void buffer_delete_char(struct buffer *buff);
 // Inserts a new line into the buffer
 void buffer_insert_line(struct buffer *buff);
 
+// Deletes the line that the cursor is pointing to.
+// If the line is the last line in the buffer, the cursor is moved to the line
+// above before the deletion. If there is only one line, the line is erased.
+void buffer_delete_line(struct buffer *buff);
+
 // Moves the x coordinate of the buffer cursor.
 // Returns the numbers of steps that the cursor has moved
 int buffer_move_cursor_x(struct buffer *buff, int dx);

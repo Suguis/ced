@@ -78,7 +78,6 @@ void editor_interpret_key(struct editor *ed, unsigned int key) {
     break;
   case KEY_HOME:
     buffer_move_cursor_x_home(ed->buff);
-    //buffer_delete_line(ed->buff);
     break;
   case KEY_END:
     buffer_move_cursor_x_end(ed->buff);
@@ -86,8 +85,16 @@ void editor_interpret_key(struct editor *ed, unsigned int key) {
     break;
   case KEY_BACKSPACE:
     // Don't delete the char if we are on the beginning of the line
-    if (buffer_move_cursor_x(ed->buff, -1))
+    if (buffer_move_cursor_x(ed->buff, -1)) {
       buffer_delete_char(ed->buff);
+    } else if (ed->buff->current_line != buffer_first_line(ed->buff)) {
+      buffer_delete_line(ed->buff);
+      if (ed->buff->current_line == buffer_last_line(ed->buff)) {
+	buffer_move_cursor_y(ed->buff, -1);
+      }
+      buffer_move_cursor_x_end(ed->buff);
+    }
+    buffer_update_cursor_real_x(ed->buff);
     break;
   case KEY_ENTER:
   case '\r':
