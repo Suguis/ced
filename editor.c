@@ -61,6 +61,12 @@ void editor_interpret_key(struct editor *ed, unsigned int key) {
   case KEY_ESC:
     ed->needs_exit = 1;
     break;
+  case KEY_HOME:
+    buffer_move_cursor_x_home(ed->buff);
+    break;
+  case KEY_END:
+    buffer_move_cursor_x_end(ed->buff);
+    break;
   case KEY_BACKSPACE:
     // Don't delete the char if we are on the beginning of the line
     if (buffer_move_cursor_x(ed->buff, -1))

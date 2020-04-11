@@ -137,4 +137,3 @@ int buffer_move_cursor_y(struct buffer *buff, int dy) {
 
   return steps;
 }
-
