@@ -19,7 +19,18 @@ struct editor *editor_new() {
   set_escdelay(ESC_DELAY);
   nonl();
   keypad(stdscr, true);
-  refresh();
+
+  ed->colors_enabled = has_colors();
+  
+  if (ed->colors_enabled) {
+    start_color();
+    init_color(COLOR_WHITE, 1000, 1000, 1000);
+    init_color(COLOR_BLACK, 0, 0, 0);
+    init_pair(TEXT_PAIR, COLOR_WHITE, COLOR_BLACK); 
+    init_pair(STATUS_PAIR, COLOR_BLACK, COLOR_WHITE);
+    bkgd(COLOR_PAIR(TEXT_PAIR));
+  }
+  editor_refresh(ed);
 
   return ed;
 }
@@ -85,6 +96,13 @@ void editor_interpret_key(struct editor *ed, unsigned int key) {
 
 void editor_refresh(struct editor *ed) {
   clear();
+  editor_draw_text(ed);
+  move(ed->buff->cursor_y, ed->buff->cursor_x);
+  refresh();
+}
+
+void editor_draw_text(struct editor *ed) {
+  if (ed->colors_enabled) attron(COLOR_PAIR(TEXT_PAIR));
   
   int y = 0;
   int x;
@@ -101,7 +119,6 @@ void editor_refresh(struct editor *ed) {
     y++;
     line = line->next_line;
   }
-  move(ed->buff->cursor_y, ed->buff->cursor_x);
   
-  refresh();
+  if (ed->colors_enabled) attroff(COLOR_PAIR(TEXT_PAIR));
 }

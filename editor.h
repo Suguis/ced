@@ -4,8 +4,12 @@
 #define KEY_ESC 27
 #define ESC_DELAY 10
 
+#define TEXT_PAIR 1
+#define STATUS_PAIR 2
+
 struct editor {
   int needs_exit;
+  int colors_enabled;
   struct buffer *buff;
 };
 
@@ -26,5 +30,9 @@ void editor_interpret_key(struct editor *ed, unsigned int key);
 
 // Refreshes the display of the editor
 void editor_refresh(struct editor *ed);
+
+// Draws the text of the buffer on the display
+void editor_draw_text(struct editor *ed);
+
 
 #endif // EDITOR_H
