@@ -21,7 +21,10 @@ struct line_node {
 
 /* The buffer represents a structure of a double linked list containing the lines,
  * and references to the current line and the current char pointed by the cursor.
- * It also contains the position of the cursor in the x-y axis.
+ * It also contains the position of the cursor in the x-y axis. The variable
+ * cursor_real_x is used when we are on a line and we move to a shorter one
+ * and the cursor is forced to move to the left. The value of the last position
+ * is stored in that variable and remains unchanged unless we move horizontally.
  */
 struct buffer {
   struct line_node *first_line;
