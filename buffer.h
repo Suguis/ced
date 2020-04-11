@@ -36,8 +36,8 @@ struct buffer {
   int cursor_y;
 };
 
-#define buffer_first_line(buff) buff->beg_sentinel.next_line
-#define buffer_last_line(buff) buff->end_sentinel.prev_line
+#define buffer_first_line(buff) (buff->beg_sentinel.next_line)
+#define buffer_last_line(buff) (buff->end_sentinel.prev_line)
 
 #define buffer_move_cursor_x_end(buff) while(buffer_move_cursor_x(buff, 1))
 #define buffer_move_cursor_x_home(buff) while(buffer_move_cursor_x(buff, -1))
