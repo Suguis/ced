@@ -97,6 +97,7 @@ void editor_interpret_key(struct editor *ed, unsigned int key) {
 void editor_refresh(struct editor *ed) {
   clear();
   editor_draw_text(ed);
+  editor_draw_status_line(ed);
   move(ed->buff->cursor_y, ed->buff->cursor_x);
   refresh();
 }
@@ -121,4 +122,21 @@ void editor_draw_text(struct editor *ed) {
   }
   
   if (ed->colors_enabled) attroff(COLOR_PAIR(TEXT_PAIR));
+}
+
+void editor_draw_status_line(struct editor *ed) {
+  if (ed->colors_enabled) attron(COLOR_PAIR(STATUS_PAIR));
+
+  // Draw the name of the file
+  mvprintw(LINES - 1, 0, "[New file]");
+
+  // Fill the rest of the line with white spaces
+  int y, x;
+  getyx(stdscr, y, x);
+  while(x++ < COLS) addch(' ');
+
+  // Draw the number of line and column
+  mvprintw(LINES - 1, COLS - 8,"%d:%d", ed->buff->cursor_y + 1, ed->buff->cursor_x + 1);
+  
+  if (ed->colors_enabled) attroff(COLOR_PAIR(STATUS_PAIR));
 }

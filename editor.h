@@ -34,5 +34,8 @@ void editor_refresh(struct editor *ed);
 // Draws the text of the buffer on the display
 void editor_draw_text(struct editor *ed);
 
+// Draws the status line on the display
+void editor_draw_status_line(struct editor *ed);
+
 
 #endif // EDITOR_H
