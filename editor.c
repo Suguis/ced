@@ -100,6 +100,7 @@ void editor_interpret_key(struct editor *ed, unsigned int key) {
     if (line_node_empty(ed->buff->current_line)
 	|| buffer_eol(ed->buff)) buffer_join_line(ed->buff);
     else buffer_delete_char(ed->buff);
+    buffer_update_real_x(ed->buff);
     break;
   case KEY_ENTER:
   case '\r':
