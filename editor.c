@@ -90,12 +90,11 @@ void editor_interpret_key(struct editor *ed, unsigned int key) {
     if (buffer_move_x(ed->buff, -1)) {
       buffer_delete_char(ed->buff);
     } else if (!buffer_bob(ed->buff)) {
-      int eob = buffer_eob(ed->buff);
-      buffer_delete_line(ed->buff);
-      if (!eob) {
-       	buffer_move_y(ed->buff, -1);
-      }
+      buffer_move_y(ed->buff, -1);
       buffer_move_x_end(ed->buff);
+      int bol = !buffer_move_x(ed->buff, -1);
+      buffer_join_line(ed->buff);
+      if (!bol) buffer_move_x(ed->buff, 1);
     }
     buffer_update_real_x(ed->buff);
     break;

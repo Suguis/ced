@@ -140,6 +140,25 @@ void buffer_split_line(struct buffer *buff) {
   buff->current_char = node;
 }
 
+void buffer_join_line(struct buffer *buff) {
+  if (!buffer_eob(buff)) {
+    if (line_node_empty(buff->current_line)) {
+      buffer_delete_line(buff);
+      return;
+    }
+    struct char_node *last = buff->current_line->last_char->prev_char;
+    free(last->next_char);
+    last->next_char = buff->current_line->next_line->first_char;
+    last->next_char->prev_char = last;
+    
+    buff->current_line->last_char = buff->current_line->next_line->last_char;
+    struct line_node *deleted = buff->current_line->next_line;
+    buff->current_line->next_line = deleted->next_line;
+    if (deleted->next_line) deleted->next_line->prev_line = buff->current_line;
+    free(deleted);
+  }
+}
+
 int buffer_move_x(struct buffer *buff, int dx) {
   // We move the cursor until we reach the bounds or until the requested distance has been moved
   int steps = 0;

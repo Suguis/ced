@@ -79,6 +79,9 @@ void buffer_delete_line(struct buffer *buff);
 // Moves the line contents from the cursor to the end into a new line below
 void buffer_split_line(struct buffer *buff);
 
+// Joins the current line and the line below into one.
+void buffer_join_line(struct buffer *buff);
+
 // Moves the x coordinate of the buffer cursor.
 // Returns the numbers of steps that the cursor has moved
 int buffer_move_x(struct buffer *buff, int dx);
