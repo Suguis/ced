@@ -58,53 +58,59 @@ void editor_interpret_key(struct editor *ed, unsigned int key) {
   
   switch (key) {
   case KEY_UP:
-    buffer_move_cursor_y(ed->buff, -1);
+    buffer_move_y(ed->buff, -1);
     break;
   case KEY_DOWN:
-    buffer_move_cursor_y(ed->buff, 1);
+    buffer_move_y(ed->buff, 1);
     break;
   case KEY_LEFT:
-    if (buffer_move_cursor_x(ed->buff, -1)) {
-      buffer_update_cursor_real_x(ed->buff);
+    if (buffer_move_x(ed->buff, -1)) {
+      buffer_update_real_x(ed->buff);
     }
     break;
   case KEY_RIGHT:
-    if (buffer_move_cursor_x(ed->buff, 1)) {
-      buffer_update_cursor_real_x(ed->buff);
+    if (buffer_move_x(ed->buff, 1)) {
+      buffer_update_real_x(ed->buff);
     }
     break;
   case KEY_ESC:
     ed->needs_exit = 1;
     break;
   case KEY_HOME:
-    buffer_move_cursor_x_home(ed->buff);
+    if (!buffer_bol(ed->buff)) {
+      buffer_move_x_home(ed->buff);
+      buffer_update_real_x(ed->buff);
+    }
     break;
   case KEY_END:
-    buffer_move_cursor_x_end(ed->buff);
-    // TODO: actualizar real_x adecuadamente
+    if (!buffer_eol(ed->buff)) {
+	buffer_move_x_end(ed->buff);
+	buffer_update_real_x(ed->buff);
+    }
     break;
   case KEY_BACKSPACE:
-    // Don't delete the char if we are on the beginning of the line
-    if (buffer_move_cursor_x(ed->buff, -1)) {
+    if (buffer_move_x(ed->buff, -1)) {
       buffer_delete_char(ed->buff);
-    } else if (ed->buff->current_line != buffer_first_line(ed->buff)) {
+    } else if (!buffer_bob(ed->buff)) {
+      int eob = buffer_eob(ed->buff);
       buffer_delete_line(ed->buff);
-      if (ed->buff->current_line == buffer_last_line(ed->buff)) {
-	buffer_move_cursor_y(ed->buff, -1);
+      if (!eob) {
+       	buffer_move_y(ed->buff, -1);
       }
-      buffer_move_cursor_x_end(ed->buff);
+      buffer_move_x_end(ed->buff);
     }
-    buffer_update_cursor_real_x(ed->buff);
+    buffer_update_real_x(ed->buff);
     break;
   case KEY_ENTER:
   case '\r':
     buffer_insert_line(ed->buff);
-    buffer_move_cursor_y(ed->buff, 1);
-    buffer_update_cursor_real_x(ed->buff);
+    buffer_move_y(ed->buff, 1);
+    buffer_update_real_x(ed->buff);
     break;
   default:
     buffer_insert_char(ed->buff, ch);
-    buffer_move_cursor_x(ed->buff, 1);
+    buffer_move_x(ed->buff, 1);
+    buffer_update_real_x(ed->buff);
   }
 }
 

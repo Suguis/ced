@@ -36,12 +36,19 @@ struct buffer {
   int cursor_y;
 };
 
-#define buffer_first_line(buff) (buff->beg_sentinel.next_line)
-#define buffer_last_line(buff) (buff->end_sentinel.prev_line)
+#define buffer_first_line(b) (b->beg_sentinel.next_line)
+#define buffer_last_line(b) (b->end_sentinel.prev_line)
 
-#define buffer_move_cursor_x_end(buff) while(buffer_move_cursor_x(buff, 1))
-#define buffer_move_cursor_x_home(buff) while(buffer_move_cursor_x(buff, -1))
-#define buffer_update_cursor_real_x(buff) (buff->cursor_real_x = buff->cursor_x)
+#define buffer_bol(b) (b->current_char == b->current_line->first_char) // Beggining of line
+#define buffer_eol(b) (b->current_char == b->current_line->last_char)  // End of line
+#define buffer_bob(b) (b->current_line->prev_line == &b->beg_sentinel) // First line of buffer
+#define buffer_eob(b) (b->current_line->next_line == &b->end_sentinel) // Last line of buffer
+
+#define buffer_move_x_end(b) while(buffer_move_x(b, 1));
+#define buffer_move_x_home(b) while(buffer_move_x(b, -1));
+#define buffer_update_real_x(b) (b->cursor_real_x = b->cursor_x)
+
+#define line_node_empty(l) (l->first_char == l->last_char)
 
 // Creates a new empty line
 struct line_node *line_node_new();
@@ -71,10 +78,10 @@ void buffer_delete_line(struct buffer *buff);
 
 // Moves the x coordinate of the buffer cursor.
 // Returns the numbers of steps that the cursor has moved
-int buffer_move_cursor_x(struct buffer *buff, int dx);
+int buffer_move_x(struct buffer *buff, int dx);
 
 // Moves the y coordinate of the buffer cursor
 // Returns the numbers of steps that the cursor has moved
-int buffer_move_cursor_y(struct buffer *buff, int dy);
+int buffer_move_y(struct buffer *buff, int dy);
 
 #endif // BUFFER_H

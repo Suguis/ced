@@ -66,9 +66,9 @@ void buffer_insert_char(struct buffer *buff, wchar_t *ch) {
 }
 
 void buffer_delete_char(struct buffer *buff) {
-  if (buff->current_char != buff->current_line->last_char) {
+  if (!buffer_eol(buff)) {
     buff->current_char->next_char->prev_char = buff->current_char->prev_char;
-    if (buff->current_char == buff->current_line->first_char) {
+    if (buffer_bol(buff)) {
       buff->current_line->first_char = buff->current_char->next_char;
     } else {
       buff->current_char->prev_char->next_char = buff->current_char->next_char;
@@ -90,16 +90,16 @@ void buffer_insert_line(struct buffer *buff) {
 
 void buffer_delete_line(struct buffer *buff) {
   if (buffer_first_line(buff) == buffer_last_line(buff)) {
-    buffer_move_cursor_x_home(buff);
-    while (buffer_first_line(buff)->first_char != buffer_first_line(buff)->last_char) {
+    buffer_move_x_home(buff);
+    while (!line_node_empty(buffer_first_line(buff))) {
       buffer_delete_char(buff);
     }
   } else {
     struct line_node *deleted = buff->current_line;
     
-    if (buff->current_line == buffer_last_line(buff)) buffer_move_cursor_y(buff, -1);
+    if (buffer_eob(buff)) buffer_move_y(buff, -1);
     else {
-      buffer_move_cursor_y(buff, 1);
+      buffer_move_y(buff, 1);
       buff->cursor_y--;
     }
     
@@ -109,17 +109,17 @@ void buffer_delete_line(struct buffer *buff) {
   }
 }
 
-int buffer_move_cursor_x(struct buffer *buff, int dx) {
+int buffer_move_x(struct buffer *buff, int dx) {
   // We move the cursor until we reach the bounds or until the requested distance has been moved
   int steps = 0;
   if (dx > 0) {
-    while (dx != steps && buff->current_char->next_char != NULL) {
+    while (dx != steps && !buffer_eol(buff)) {
       buff->current_char = buff->current_char->next_char;
       steps++;
       buff->cursor_x++;
     }
   } else {
-    while (dx != steps && buff->current_char->prev_char != NULL) {
+    while (dx != steps && !buffer_bol(buff)) {
       buff->current_char = buff->current_char->prev_char;
       steps--;
       buff->cursor_x--;
@@ -129,16 +129,16 @@ int buffer_move_cursor_x(struct buffer *buff, int dx) {
   return steps;
 }
 
-int buffer_move_cursor_y(struct buffer *buff, int dy) {
+int buffer_move_y(struct buffer *buff, int dy) {
   int steps = 0;
   if (dy > 0) {
-    while (dy != steps && buff->current_line != buffer_last_line(buff)) {
+    while (dy != steps && !buffer_eob(buff)) {
       buff->current_line = buff->current_line->next_line;
       steps++;
       buff->cursor_y++;
     }
   } else {
-    while (dy != steps && buff->current_line != buffer_first_line(buff)) {
+    while (dy != steps && !buffer_bob(buff)) {
       buff->current_line = buff->current_line->prev_line;
       steps--;
       buff->cursor_y--;
@@ -150,7 +150,7 @@ int buffer_move_cursor_y(struct buffer *buff, int dy) {
    */
   buff->current_char = buff->current_line->first_char;
   int x = 0;
-  while (x != buff->cursor_real_x && buff->current_char != buff->current_line->last_char) {
+  while (x != buff->cursor_real_x && !buffer_eol(buff)) {
     buff->current_char = buff->current_char->next_char;
     x++;
   }
