@@ -92,14 +92,13 @@ void editor_interpret_key(struct editor *ed, unsigned int key) {
     } else if (!buffer_bob(ed->buff)) {
       buffer_move_y(ed->buff, -1);
       buffer_move_x_end(ed->buff);
-      int bol = !buffer_move_x(ed->buff, -1);
       buffer_join_line(ed->buff);
-      if (!bol) buffer_move_x(ed->buff, 1);
     }
     buffer_update_real_x(ed->buff);
     break;
   case KEY_DC:
-    if (line_node_empty(ed->buff->current_line)) buffer_join_line(ed->buff);
+    if (line_node_empty(ed->buff->current_line)
+	|| buffer_eol(ed->buff)) buffer_join_line(ed->buff);
     else buffer_delete_char(ed->buff);
     break;
   case KEY_ENTER:

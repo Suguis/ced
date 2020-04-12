@@ -146,10 +146,13 @@ void buffer_join_line(struct buffer *buff) {
       buffer_delete_line(buff);
       return;
     }
+    int eol = buffer_eol(buff);
+    
     struct char_node *last = buff->current_line->last_char->prev_char;
     free(last->next_char);
     last->next_char = buff->current_line->next_line->first_char;
     last->next_char->prev_char = last;
+    if (eol) buff->current_char = last->next_char;
     
     buff->current_line->last_char = buff->current_line->next_line->last_char;
     struct line_node *deleted = buff->current_line->next_line;
