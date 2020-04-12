@@ -54,8 +54,6 @@ unsigned int editor_get_key() {
 }
 
 void editor_interpret_key(struct editor *ed, unsigned int key) {
-  wchar_t ch[2] = {key, L'\0'};
-  
   switch (key) {
   case KEY_UP:
     buffer_move_y(ed->buff, -1);
@@ -103,12 +101,13 @@ void editor_interpret_key(struct editor *ed, unsigned int key) {
     break;
   case KEY_ENTER:
   case '\r':
-    buffer_insert_line(ed->buff);
-    buffer_move_y(ed->buff, 1);
+    buffer_split_line(ed->buff);
+    buffer_move_x_home(ed->buff);
     buffer_update_real_x(ed->buff);
+    buffer_move_y(ed->buff, 1);
     break;
   default:
-    buffer_insert_char(ed->buff, ch);
+    buffer_insert_char(ed->buff, key);
     buffer_move_x(ed->buff, 1);
     buffer_update_real_x(ed->buff);
   }

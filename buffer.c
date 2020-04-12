@@ -2,10 +2,11 @@
 #include "util.h"
 #include <stdlib.h>
 
-struct char_node *char_node_new(wchar_t *ch) {
+struct char_node *char_node_new(unsigned int ch) {
   struct char_node *new = safe_malloc(sizeof(struct char_node));
-  new->elem[0] = ch[0]; // Char copy
-  new->elem[1] = ch[1];
+  new->elem[0] = ch; // Char copy
+  new->elem[1] = '\0';
+  new->prev_char = new->next_char = NULL;
   return new;
 }
 
@@ -54,9 +55,9 @@ void buffer_free(struct buffer *buff) {
   free(buff);
 }
 
-void buffer_insert_char(struct buffer *buff, wchar_t *ch) {
+void buffer_insert_char(struct buffer *buff, unsigned int ch) {
   struct char_node *new = char_node_new(ch);
-
+  
   struct char_node *new_prev = buff->current_char->prev_char;
   struct char_node *new_next = buff->current_char;
   new->prev_char = new_prev;
@@ -112,6 +113,31 @@ void buffer_delete_line(struct buffer *buff) {
     deleted->next_line->prev_line = deleted->prev_line;
     line_node_free(deleted);
   }
+}
+
+void buffer_split_line(struct buffer *buff) {
+  // Create and link the new line
+  struct line_node *line = safe_malloc(sizeof(struct line_node));
+  line->prev_line = buff->current_line;
+  line->next_line = buff->current_line->next_line;
+  line->first_char = buff->current_char;
+  line->last_char = buff->current_line->last_char;
+
+  // Create and link the new char
+  struct char_node *node = char_node_new('\0');
+  if (!buffer_bol(buff)) node->prev_char = buff->current_char->prev_char;
+
+  // Modify the previous char links
+  if (!buffer_bol(buff)) node->prev_char->next_char = node;
+  buff->current_char->prev_char = NULL;
+
+  // Modify the previous line links
+  if (buffer_bol(buff)) buff->current_line->first_char = node;
+  buff->current_line->last_char = node;
+  line->next_line->prev_line = line;
+  line->prev_line->next_line = line;
+
+  buff->current_char = node;
 }
 
 int buffer_move_x(struct buffer *buff, int dx) {

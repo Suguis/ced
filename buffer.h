@@ -46,13 +46,12 @@ struct buffer {
 
 #define buffer_move_x_end(b) while(buffer_move_x(b, 1));
 #define buffer_move_x_home(b) while(buffer_move_x(b, -1));
-
 #define buffer_update_real_x(b) (b->cursor_real_x = b->cursor_x)
 
 #define line_node_empty(l) (l->first_char == l->last_char)
 
 // Creates a new char node
-struct char_node *char_node_new(wchar_t *ch);
+struct char_node *char_node_new(unsigned int ch);
 
 // Creates a new empty line
 struct line_node *line_node_new();
@@ -67,18 +66,18 @@ struct buffer *buffer_new();
 void buffer_free(struct buffer *buff);
 
 // Inserts a character into the buffer
-void buffer_insert_char(struct buffer *buff, wchar_t *ch);
+void buffer_insert_char(struct buffer *buff, unsigned int ch);
 
 // Deletes the character that the cursor is pointing to
 void buffer_delete_char(struct buffer *buff);
-
-// Inserts a new line into the buffer
-void buffer_insert_line(struct buffer *buff);
-
+ 
 // Deletes the line that the cursor is pointing to.
 // If the line is the last line in the buffer, the cursor is moved to the line
 // above before the deletion. If there is only one line, the line is erased.
 void buffer_delete_line(struct buffer *buff);
+
+// Moves the line contents from the cursor to the end into a new line below
+void buffer_split_line(struct buffer *buff);
 
 // Moves the x coordinate of the buffer cursor.
 // Returns the numbers of steps that the cursor has moved
