@@ -46,9 +46,13 @@ struct buffer {
 
 #define buffer_move_x_end(b) while(buffer_move_x(b, 1));
 #define buffer_move_x_home(b) while(buffer_move_x(b, -1));
+
 #define buffer_update_real_x(b) (b->cursor_real_x = b->cursor_x)
 
 #define line_node_empty(l) (l->first_char == l->last_char)
+
+// Creates a new char node
+struct char_node *char_node_new(wchar_t *ch);
 
 // Creates a new empty line
 struct line_node *line_node_new();

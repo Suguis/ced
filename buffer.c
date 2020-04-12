@@ -2,6 +2,13 @@
 #include "util.h"
 #include <stdlib.h>
 
+struct char_node *char_node_new(wchar_t *ch) {
+  struct char_node *new = safe_malloc(sizeof(struct char_node));
+  new->elem[0] = ch[0]; // Char copy
+  new->elem[1] = ch[1];
+  return new;
+}
+
 struct line_node *line_node_new() {
   struct line_node *line = safe_malloc(sizeof(struct line_node));
   
@@ -48,9 +55,7 @@ void buffer_free(struct buffer *buff) {
 }
 
 void buffer_insert_char(struct buffer *buff, wchar_t *ch) {
-  struct char_node *new = safe_malloc(sizeof(struct char_node));
-  new->elem[0] = ch[0]; // Char copy
-  new->elem[1] = ch[1];
+  struct char_node *new = char_node_new(ch);
 
   struct char_node *new_prev = buff->current_char->prev_char;
   struct char_node *new_next = buff->current_char;
