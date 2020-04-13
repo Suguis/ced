@@ -14,7 +14,7 @@ struct editor {
 };
 
 // Creates a new editor structure with an empty buffer, and starts curses mode
-struct editor *editor_new();
+struct editor *editor_new(char *filename);
 
 // Frees the memory of the editor and ends curses mode
 void editor_exit(struct editor *ed);

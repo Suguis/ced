@@ -34,6 +34,7 @@ struct buffer {
   int cursor_x;
   int cursor_real_x;
   int cursor_y;
+  char *name;
 };
 
 #define buffer_first_line(b) (b->beg_sentinel.next_line)
@@ -60,7 +61,7 @@ struct line_node *line_node_new();
 void line_node_free(struct line_node *line);
 
 // Creates a new buffer with an empty line
-struct buffer *buffer_new();
+struct buffer *buffer_new(char *filename);
 
 // Frees the memory of a buffer
 void buffer_free(struct buffer *buff);
@@ -89,5 +90,8 @@ int buffer_move_x(struct buffer *buff, int dx);
 // Moves the y coordinate of the buffer cursor
 // Returns the numbers of steps that the cursor has moved
 int buffer_move_y(struct buffer *buff, int dy);
+
+// Reads a file and writes it into the buffer
+void buffer_read_file(struct buffer *buff, char *filename);
 
 #endif // BUFFER_H

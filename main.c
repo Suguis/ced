@@ -1,10 +1,12 @@
 #include "editor.h"
 #include "util.h"
 
-int main() {
+int main(int argc, char **argv) {
   if (STDIN_IS_TERMINAL()) { // To prevent input of pipes and files
-    struct editor *ed = editor_new();
-  
+
+    char *filename = argc > 1 ? argv[1] : NULL;
+    struct editor *ed = editor_new(filename);
+    
     while(!editor_needs_exit(ed)) {
       editor_interpret_key(ed, editor_get_key());
       editor_refresh(ed);

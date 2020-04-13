@@ -6,11 +6,12 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <locale.h>
+#include <iconv.h>
 
-struct editor *editor_new() {
+struct editor *editor_new(char *filename) {
   struct editor *ed = safe_malloc(sizeof(struct editor));
   ed->needs_exit = 0;
-  ed->buff = buffer_new();
+  ed->buff = buffer_new(filename);
   
   setlocale(LC_ALL, "");
   initscr();
@@ -36,8 +37,6 @@ struct editor *editor_new() {
 }
 
 void editor_exit(struct editor *ed) {
-  struct buffer *b = buffer_new();
-  buffer_free(b);
   buffer_free(ed->buff);
   free(ed);
   endwin();
@@ -150,7 +149,7 @@ void editor_draw_status_line(struct editor *ed) {
   if (ed->colors_enabled) attron(COLOR_PAIR(STATUS_PAIR));
 
   // Draw the name of the file
-  mvprintw(LINES - 1, 0, "[New file]");
+  mvprintw(LINES - 1, 0, ed->buff->name);
 
   // Fill the rest of the line with white spaces
   int y, x;

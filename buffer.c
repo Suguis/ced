@@ -1,6 +1,9 @@
 #include "buffer.h"
 #include "util.h"
 #include <stdlib.h>
+#include <stdio.h>
+#include <iconv.h>
+#include <string.h>
 
 struct char_node *char_node_new(unsigned int ch) {
   struct char_node *new = safe_malloc(sizeof(struct char_node));
@@ -31,7 +34,7 @@ void line_node_free(struct line_node *line) {
   free(line);
 }
 
-struct buffer *buffer_new() {
+struct buffer *buffer_new(char *filename) {
   struct buffer *buff = safe_malloc(sizeof(struct buffer));
   
   buffer_first_line(buff) = buffer_last_line(buff) = buff->current_line = line_node_new();
@@ -41,6 +44,13 @@ struct buffer *buffer_new() {
   buff->cursor_x = 0;
   buff->cursor_real_x = 0;
   buff->cursor_y = 0;
+  
+  if (filename) {
+    buff->name = filename;
+    buffer_read_file(buff, filename);
+  } else {
+    buff->name = "[New file]";
+  }
   
   return buff;
 }
@@ -210,4 +220,58 @@ int buffer_move_y(struct buffer *buff, int dy) {
   buff->cursor_x = x;
 
   return steps;
+}
+
+void buffer_read_file(struct buffer *buff, char *filename) {
+  FILE *file = fopen(filename, "r");
+  // If the file doesn't exist, we start with an empty buffer for it
+  if (!file) return;
+
+  // Get file size
+  fseek(file, 0L, SEEK_END);
+  size_t file_size = ftell(file);
+  fseek(file, 0L, SEEK_SET);
+
+  // Read the file into the buffer
+  char file_buff[file_size];
+  memset(file_buff, 0, sizeof(file_buff));
+  char *file_ptr = file_buff;
+  fread(file_buff, sizeof(char), file_size-1, file); // -1 to delete remove '\n' on file
+
+  // We multiply the size of the file by 4 to get enought memory for the conversion
+  size_t text_size = file_size * 4;
+
+  // We create a buffer for the text stored in Unicode
+  char text_buff[text_size + 4];
+  memset(text_buff, 0, sizeof(text_buff));
+  char *text_ptr = text_buff;
+
+  // We convert the file contents to Unicode and store it in text_buff
+  iconv_t conversion = iconv_open("Unicode", "UTF-8");
+  iconv(conversion, &file_ptr, &file_size, &text_ptr, &text_size);
+  iconv_close(conversion);
+
+  // Skip Unicode magic nunmber
+  text_ptr = text_buff + 2;
+
+  // We finally put the unicode characters into the text buffer of the editor
+  unsigned char *p = (unsigned char*)text_ptr;
+  while (1) {
+    // Read 16-bit little endian character
+    unsigned int ch;
+    ch = *p;
+    p++;
+    ch |= *p << 8;
+    p++;
+      
+    if (ch == '\n') {
+      buffer_split_line(buff);
+      buffer_move_y(buff, 1);
+    } else if (!ch) { // If is a null character, we have finishedx
+      break;
+    } else {
+      buffer_insert_char(buff, ch);
+      buffer_move_x(buff, 1);
+    }
+  }
 }
