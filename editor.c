@@ -31,6 +31,8 @@ struct editor *editor_new(char *filename) {
     init_pair(STATUS_PAIR, COLOR_BLACK, COLOR_WHITE);
     bkgd(COLOR_PAIR(TEXT_PAIR));
   }
+  
+  buffer_move_y_top(ed->buff);
   editor_refresh(ed);
 
   return ed;
