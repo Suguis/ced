@@ -31,6 +31,8 @@ struct buffer {
   struct line_node end_sentinel;
   struct line_node *current_line;
   struct char_node *current_char;
+  int displacement_y;
+  int displacement_x;
   int cursor_x;
   int cursor_real_x;
   int cursor_y;

@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <iconv.h>
 #include <string.h>
+#include <curses.h>
 
 struct char_node *char_node_new(unsigned int ch) {
   struct char_node *new = safe_malloc(sizeof(struct char_node));
@@ -44,6 +45,8 @@ struct buffer *buffer_new(char *filename) {
   buff->cursor_x = 0;
   buff->cursor_real_x = 0;
   buff->cursor_y = 0;
+  buff->displacement_y = 0;
+  buff->displacement_x = 0;
   
   if (filename) {
     buff->name = filename;
@@ -189,6 +192,11 @@ int buffer_move_x(struct buffer *buff, int dx) {
     }
   }
 
+  if (buff->cursor_x > COLS - 2 + buff->displacement_x)
+    buff->displacement_x = buff->cursor_x - (COLS - 2);
+  else if (buff->cursor_x < buff->displacement_x)
+    buff->displacement_x = buff->cursor_x;
+
   return steps;
 }
 
@@ -207,6 +215,11 @@ int buffer_move_y(struct buffer *buff, int dy) {
       buff->cursor_y--;
     }
   }
+
+  if (buff->cursor_y > LINES - 2 + buff->displacement_y)
+    buff->displacement_y = buff->cursor_y - (LINES - 2);
+  else if (buff->cursor_y < buff->displacement_y)
+    buff->displacement_y = buff->cursor_y;
   
   /* We need to move again the cursor to the same x position of the previous line,
    * or the maximum possible, if the actual line is shorter than the previous line
@@ -219,6 +232,11 @@ int buffer_move_y(struct buffer *buff, int dy) {
   }
   buff->cursor_x = x;
 
+  if (buff->cursor_x > COLS - 2 + buff->displacement_x)
+    buff->displacement_x = buff->cursor_x - (COLS - 2);
+  else if (buff->cursor_x < buff->displacement_x)
+    buff->displacement_x = buff->cursor_x;
+  
   return steps;
 }
 

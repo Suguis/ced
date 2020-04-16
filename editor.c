@@ -121,7 +121,8 @@ void editor_refresh(struct editor *ed) {
   clear();
   editor_draw_text(ed);
   editor_draw_status_line(ed);
-  move(ed->buff->cursor_y, ed->buff->cursor_x);
+  move(ed->buff->cursor_y - ed->buff->displacement_y,
+       ed->buff->cursor_x - ed->buff->displacement_x);
   refresh();
 }
 
@@ -132,10 +133,19 @@ void editor_draw_text(struct editor *ed) {
   int x;
   struct line_node *line = buffer_first_line(ed->buff);
   struct char_node *node;
+
+  // Displace the text vertically if necesary
+  int yd = ed->buff->displacement_y;
+  while (yd--) line = line->next_line;
   
   while (line != &ed->buff->end_sentinel) {
     x = 0;
     node = line->first_char;
+    
+    // Displace the text horizontally if necesary
+    int xd = ed->buff->displacement_x;
+    while (node != line->last_char && xd--) node = node->next_char;
+    
     while(node != line->last_char) {
       mvaddwstr(y, x++, node->elem);
       node = node->next_char;
