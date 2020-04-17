@@ -1,7 +1,7 @@
 # ced
 A simple curses text editor written in C.
 
-# Controls
+## Controls
 - Arrow keys: move cursor.
 - Home/End: go to the beggining/end of line.
 - Supr: remove the character under the cursor.
@@ -10,7 +10,7 @@ A simple curses text editor written in C.
 - Ctrl+S: save the file.
 - Esc: exit the program (make sure you save first).
 
-# How it works
+## How it works
 Simply compile it with make and write
 ```
 ./ced <file>
