@@ -4,7 +4,7 @@ A simple curses text editor written in C.
 ## Controls
 - Arrow keys: move cursor.
 - Home/End: go to the beggining/end of line.
-- Supr: remove the character under the cursor.
+- Del: remove the character under the cursor.
 - Return: insert a new line.
 - Backspace: remove the character before the cursor.
 - Ctrl+S: save the file.
