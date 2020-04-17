@@ -319,8 +319,8 @@ void buffer_save_file(struct buffer *buff) {
     }
     line = line->next_line;
     if (line != &buff->end_sentinel) {
-      i++;
       text_buff[i++] = '\n';
+      i++;
     }
   }
 
