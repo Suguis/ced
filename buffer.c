@@ -52,10 +52,15 @@ struct buffer *buffer_new(char *filename) {
     buff->name = filename;
     buffer_read_file(buff, filename);
   } else {
-    buff->name = "[New file]";
+    buff->name = NULL;
   }
   
   return buff;
+}
+
+char *buffer_get_name(struct buffer *buff) {
+  static char mem[] = "[In-memory (can't save)]";
+  return buff->name ? buff->name : mem;
 }
 
 void buffer_free(struct buffer *buff) {
@@ -255,6 +260,7 @@ void buffer_read_file(struct buffer *buff, char *filename) {
   memset(file_buff, 0, sizeof(file_buff));
   char *file_ptr = file_buff;
   fread(file_buff, sizeof(char), file_size-1, file); // -1 to delete remove '\n' on file
+  fclose(file);
 
   // We multiply the size of the file by 4 to get enought memory for the conversion
   size_t text_size = file_size * 4;
@@ -292,4 +298,46 @@ void buffer_read_file(struct buffer *buff, char *filename) {
       buffer_move_x(buff, 1);
     }
   }
+}
+
+void buffer_save_file(struct buffer *buff) {
+  char text_buff[1000000];
+  char *text_ptr = text_buff;
+  memset(text_buff, 0, sizeof(text_buff));
+
+  struct line_node *line = buffer_first_line(buff);
+  struct char_node *node;
+
+  int i = 0;
+  while (line != &buff->end_sentinel) {
+    node = line->first_char;
+    
+    while(node != line->last_char) {
+      text_buff[i++] = (node->elem[0] & 0xff);
+      text_buff[i++] = (node->elem[0] >> 8);
+      node = node->next_char;
+    }
+    line = line->next_line;
+    if (line != &buff->end_sentinel) {
+      i++;
+      text_buff[i++] = '\n';
+    }
+  }
+
+  size_t text_size = i;
+
+  char file_buff[i];
+  memset(file_buff, 0, sizeof(file_buff));
+  char *file_ptr = file_buff;
+  size_t file_size = i;
+  memset(file_buff, 0, i);
+
+  iconv_t conversion = iconv_open("UTF-8", "Unicode");
+  iconv(conversion, &text_ptr, &text_size, &file_ptr, &file_size);
+  iconv_close(conversion);
+
+  FILE *file = fopen(buff->name, "wb");
+  fwrite(file_buff, 1, i - file_size, file);
+  fputc('\n', file); // End of file
+  fclose(file);
 }

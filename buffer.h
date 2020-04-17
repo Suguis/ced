@@ -36,6 +36,7 @@ struct buffer {
   int cursor_x;
   int cursor_real_x;
   int cursor_y;
+  int memory_buffer;
   char *name;
 };
 
@@ -67,6 +68,9 @@ void line_node_free(struct line_node *line);
 // Creates a new buffer with an empty line
 struct buffer *buffer_new(char *filename);
 
+// Returns the name of the buffer
+char *buffer_get_name(struct buffer *buff);
+
 // Frees the memory of a buffer
 void buffer_free(struct buffer *buff);
 
@@ -97,5 +101,8 @@ int buffer_move_y(struct buffer *buff, int dy);
 
 // Reads a file and writes it into the buffer
 void buffer_read_file(struct buffer *buff, char *filename);
+
+// Saves the current opened file of the buffer
+void buffer_save_file(struct buffer *buff);
 
 #endif // BUFFER_H

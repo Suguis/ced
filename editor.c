@@ -110,6 +110,9 @@ void editor_interpret_key(struct editor *ed, unsigned int key) {
     buffer_update_real_x(ed->buff);
     buffer_move_y(ed->buff, 1);
     break;
+  case 0x0013: // ^S
+    if (ed->buff->name) buffer_save_file(ed->buff);
+    break;
   default:
     buffer_insert_char(ed->buff, key);
     buffer_move_x(ed->buff, 1);
@@ -161,7 +164,7 @@ void editor_draw_status_line(struct editor *ed) {
   if (ed->colors_enabled) attron(COLOR_PAIR(STATUS_PAIR));
 
   // Draw the name of the file
-  mvprintw(LINES - 1, 0, ed->buff->name);
+  mvprintw(LINES - 1, 0, buffer_get_name(ed->buff));
 
   // Fill the rest of the line with white spaces
   int y, x;
