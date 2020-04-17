@@ -15,7 +15,7 @@ Simply compile it with make and write
 ```
 ./ced <file>
 ```
-to edit the desired file. You can also save with an in-memory buffer you can't save executing
+to edit the desired file. You can also work with an in-memory buffer you can't save executing
 ```
 ./ced
 ```
